@@ -12,6 +12,7 @@ GameStateInit.prototype.update = function(game) {
 		game.view = new View(game.w, game.h, game.renderer, game.imgAssets);
 		game.view.drawField();
 		game.view.drawScore(game.score);
+		game.view.drawNextColors(response.nextColors);
 		game.view.createReplayLink(response.uid);
 		for (let pos = 0; pos < game.fieldSize; pos++) {
 			const color = response.tiles[pos];
