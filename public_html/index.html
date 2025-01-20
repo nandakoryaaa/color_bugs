@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<title>CBUGS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<script src="js/Constants.js"></script>
+	<script src="js/EmptyTilesCache.js"></script>
+	<script src="js/PathFinder.js"></script>
+	<script src="js/LineScanner.js"></script>
+	<script src="js/CanvasRenderer.js"></script>
+	<script src="js/View.js"></script>
+	<script src="js/effect/Effect.js"></script>
+	<script src="js/effect/LoopedEffect.js"></script>
+	<script src="js/effect/ClearEffect.js"></script>
+	<script src="js/effect/RejectEffect.js"></script>
+	<script src="js/effect/GrowEffect.js"></script>
+	<script src="js/effect/TrailEffect.js"></script>
+	<script src="js/effect/ShakeEffect.js"></script>
+	<script src="js/effect/BounceEffect.js"></script>
+	<script src="js/gamestate/GameStateInit.js"></script>
+	<script src="js/gamestate/GameStateCheck.js"></script>
+	<script src="js/gamestate/GameStateEnd.js"></script>
+	<script src="js/gamestate/GameStateInput.js"></script>
+	<script src="js/gamestate/GameStatePath.js"></script>
+	<script src="js/gamestate/GameStateUpdateTiles.js"></script>
+	<script src="js/gamestate/GameStatePending.js"></script>
+	<script src="js/gamestate/GameStateTarget.js"></script>
+	<script src="js/http_server/Server.js"></script>
+	<script src="js/Game.js"></script>
+</head>
+<body>
+<center>
+	<canvas id="canvas" width="600" height="600"></canvas><br>
+	<div id="replay"><div>
+</center>
+<script>
+	function canvasClick(evt) {
+    	if (this.state instanceof GameStateInput || this.state instanceof GameStateTarget) {
+			const view = this.view;
+        	const tileX = ((evt.offsetX - view.posX) / view.stride) | 0;
+            const tileY = ((evt.offsetY - view.posY) / view.stride) | 0;
+        	if (tileX >= this.w || tileY >= this.h) {
+            	return;
+            }
+			const tileW = View.TILE_W;
+            const normalizedX = (view.posX + tileX * view.stride + tileW / 2) | 0;
+            const normalizedY = (view.posY + tileY * view.stride + tileW / 2) | 0;
+            if (
+            	Math.abs(normalizedX - evt.offsetX) > tileW / 2 - 1
+            	|| Math.abs(normalizedY - evt.offsetY) > tileW / 2 - 1
+            ) {
+            	return;
+            }
+            this.state.process(this, tileY * this.w + tileX);
+        }
+	}
+
+	function onAssetsLoaded() {
+		this.init();
+		canvas.addEventListener('mousedown', canvasClick.bind(this));
+		this.update();
+	}
+
+	const canvas = document.getElementById('canvas');
+	const renderer = new CanvasRenderer(
+		canvas.getContext('2d'), CANVAS_W, CANVAS_H
+	);
+
+	const server = new Server('server.php');
+	const game = new Game(server, renderer);
+
+	game.imgAssets = new Image();
+	game.imgAssets.onload = onAssetsLoaded.bind(game);
+	game.imgAssets.src = 'img/balls.png';
+
+</script>
+</body>
+</html>

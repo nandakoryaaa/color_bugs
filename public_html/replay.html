@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<title>Color Bugs Player</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<script src="js/Constants.js"></script>
+	<script src="js/EmptyTilesCache.js"></script>
+	<script src="js/PathFinder.js"></script>
+	<script src="js/LineScanner.js"></script>
+	<script src="js/CanvasRenderer.js"></script>
+	<script src="js/View.js"></script>
+	<script src="js/effect/Effect.js"></script>
+	<script src="js/effect/LoopedEffect.js"></script>
+	<script src="js/effect/ClearEffect.js"></script>
+	<script src="js/effect/GrowEffect.js"></script>
+	<script src="js/effect/TrailEffect.js"></script>
+	<script src="js/effect/ShakeEffect.js"></script>
+	<script src="js/effect/BounceEffect.js"></script>
+	<script src="js/http_server/replaystate/ReplayStateError.js"></script>
+	<script src="js/http_server/replaystate/ReplayStateInit.js"></script>
+	<script src="js/http_server/replaystate/ReplayStateCheck.js"></script>
+	<script src="js/http_server/replaystate/ReplayStateDelay.js"></script>
+	<script src="js/http_server/replaystate/ReplayStateMoveBegin.js"></script>
+	<script src="js/http_server/replaystate/ReplayStateMoveEnd.js"></script>
+	<script src="js/http_server/replaystate/ReplayStatePath.js"></script>
+	<script src="js/http_server/replaystate/ReplayStateUpdateTiles.js"></script>
+	<script src="js/http_server/replaystate/ReplayStatePending.js"></script>
+	<script src="js/http_server/ReplayServer.js"></script>
+	<script src="js/http_server/Replay.js"></script>
+</head>
+<body>
+<center>
+<canvas id="canvas" width="600" height="600"></canvas>
+</center>
+<script>
+	function onAssetsLoaded() {
+		const urlParams = new URLSearchParams(window.location.search);
+		const uid = urlParams.get('uid');
+		if (uid) {
+			this.init(uid);
+			this.update();
+		}
+	}
+
+	const canvas = document.getElementById('canvas');
+	const renderer = new CanvasRenderer(
+		canvas.getContext('2d'), CANVAS_W, CANVAS_H
+	);
+
+	const replayServer = new ReplayServer('replay.php');
+	const replay = new Replay(replayServer, renderer);
+	
+	replay.imgAssets = new Image();
+	replay.imgAssets.onload = onAssetsLoaded.bind(replay);
+	replay.imgAssets.src = 'img/balls.png';
+
+</script>
+</body>
+</html>
